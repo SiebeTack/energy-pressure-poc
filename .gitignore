@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+
+# SQLite databases (VERY IMPORTANT)
+*.sqlite
+*.db
+
+# Backend data & storage
+backend/storage/
+backend/data/
+
+# OS / editor
+.DS_Store
+.vscode/
