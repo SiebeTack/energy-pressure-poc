@@ -7,7 +7,7 @@ def _base_for_city(city: str) -> float:
 
 def iter_fake_hourly_rows(
     start="2015-01-01",
-    end="2024-12-31",
+    end="2026-01-27",
     seed=42,
     batch_size=100_000,
 ):
