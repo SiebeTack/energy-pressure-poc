@@ -63,3 +63,34 @@ df_all = pd.concat(frames, ignore_index=True).sort_values("month")
 st.subheader("Historical + Forecast comparison")
 fig = px.line(df_all, x="month", y="consumption_mwh", color="series", markers=True)
 st.plotly_chart(fig, use_container_width=True)
+
+show_hourly = st.checkbox("Show hourly forecast (next 24h)", value=True)
+
+if show_hourly:
+    resp = requests.get(
+        f"{API}/forecast/hourly",
+        params={"city": city, "horizon": 24, "lookback_days": 730},
+        timeout=30
+    ).json()
+
+    if "error" in resp:
+        st.error(resp["error"])
+    else:
+        df_hist = pd.DataFrame(resp["history"])
+        df_hist["ts"] = pd.to_datetime(df_hist["ts"])
+        df_hist = df_hist.rename(columns={"consumption_mwh": "value"})
+        df_hist["series"] = "history"
+
+        df_fc = pd.DataFrame(resp["forecast"])
+        df_fc["ts"] = pd.to_datetime(df_fc["ts"])
+        df_fc = df_fc.rename(columns={"yhat": "value"})
+        df_fc["series"] = "forecast_24h"
+
+        df_all = pd.concat([df_hist, df_fc], ignore_index=True).sort_values("ts")
+
+        st.subheader("Hourly forecast (last 7 days + next 24h)")
+        fig = px.line(df_all, x="ts", y="value", color="series", markers=True)
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.caption(f"Validation MAE (last slice): {resp['metrics'].get('mae_validation'):.2f} MWh")
+

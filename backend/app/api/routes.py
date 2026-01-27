@@ -7,6 +7,8 @@ from app.services.forecasting_baseline import forecast_monthly_baseline
 from app.services.forecasting_ml import forecast_monthly_ml
 from app.services.meta import get_cities_from_db
 from app.services.ingest import ingest_fake_hourly_cities
+from app.services.forecasting_hourly_ml import forecast_hourly_ml
+
 
 router = APIRouter()
 
@@ -50,3 +52,7 @@ def forecast_ml(region: str, periods: int = 6):
 @router.get("/meta/cities", tags=["meta"])
 def meta_cities():
     return {"cities": get_cities_from_db()}
+
+@router.get("/forecast/hourly", tags=["forecast"])
+def forecast_hourly(city: str, horizon: int = 24, lookback_days: int = 730):
+    return forecast_hourly_ml(city=city, horizon=horizon, lookback_days=lookback_days)
